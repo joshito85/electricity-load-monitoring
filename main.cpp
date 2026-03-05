@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 #include <fstream>
+
 using namespace std;
 
 const string FILE_NAME = "appliances.txt";
@@ -20,24 +21,28 @@ public:
         usageHours = u;
     }
 
-    string getName() { return name; }
-    float getPower() { return powerRating; }
-    float getHours() { return usageHours; }
+    string getName() {
+        return name;
+    }
 
+    float getPower() {
+        return powerRating;
+    }
+
+    float getHours() {
+        return usageHours;
+    }
+
+    // Energy calculation
     float calculateEnergy() {
         return (powerRating * usageHours) / 1000.0;
     }
-
-    void display() {
-        cout << left << setw(15) << name
-             << setw(12) << powerRating
-             << setw(12) << usageHours
-             << setw(12) << calculateEnergy() << endl;
-    }
 };
 
+// Store appliances
 vector<Appliance> appliances;
 
+// Register appliance
 void registerAppliance() {
 
     string name;
@@ -53,8 +58,11 @@ void registerAppliance() {
     cin >> hours;
 
     appliances.push_back(Appliance(name, power, hours));
+
+    cout << "Appliance added successfully.\n";
 }
 
+//  View appliances (Updated with energy column)
 void viewAppliances() {
 
     if (appliances.empty()) {
@@ -62,13 +70,19 @@ void viewAppliances() {
         return;
     }
 
+    cout << "\nAppliance List\n";
+
     cout << left << setw(15) << "Name"
          << setw(12) << "Power(W)"
          << setw(12) << "Hours"
          << setw(12) << "Energy(kWh)" << endl;
 
-    for (Appliance a : appliances)
-        a.display();
+    for (Appliance a : appliances) {
+        cout << left << setw(15) << a.getName()
+             << setw(12) << a.getPower()
+             << setw(12) << a.getHours()
+             << setw(12) << a.calculateEnergy() << endl;
+    }
 }
 
 float calculateTotalEnergy() {
@@ -91,18 +105,18 @@ void calculateBilling() {
     float totalEnergy = calculateTotalEnergy();
     float cost = totalEnergy * tariff;
 
-    cout << "\n--- Billing Summary ---\n";
+    cout << "\nBilling Summary\n";
     cout << "Total Energy: " << totalEnergy << " kWh\n";
     cout << "Tariff: " << tariff << endl;
     cout << "Total Cost: " << cost << endl;
 }
 
-// 🔹 Save appliances
 void saveAppliances() {
 
     ofstream file(FILE_NAME);
 
     for (Appliance a : appliances) {
+
         file << a.getName() << " "
              << a.getPower() << " "
              << a.getHours() << endl;
@@ -111,7 +125,6 @@ void saveAppliances() {
     file.close();
 }
 
-// 🔹 NEW: Load appliances
 void loadAppliances() {
 
     ifstream file(FILE_NAME);
@@ -119,48 +132,56 @@ void loadAppliances() {
     string name;
     float power, hours;
 
-    while (file >> name >> power >> hours) {
+    while (file >> name >> power >> hours)
         appliances.push_back(Appliance(name, power, hours));
-    }
 
     file.close();
 }
 
+// MAIN FUNCTION
 int main() {
 
-    loadAppliances();  // 🔹 Load automatically at start
+    loadAppliances();
 
     int choice;
 
     do {
-        cout << "\n1. Register Appliance\n";
+
+        cout << "\n===== SMART ENERGY SYSTEM =====\n";
+        cout << "1. Register Appliance\n";
         cout << "2. View Appliances\n";
         cout << "3. Calculate Total Energy\n";
         cout << "4. Calculate Billing\n";
         cout << "5. Exit\n";
+
         cout << "Choice: ";
         cin >> choice;
 
         switch (choice) {
+
         case 1:
             registerAppliance();
             break;
+
         case 2:
             viewAppliances();
             break;
+
         case 3:
             cout << "Total Energy: "
                  << calculateTotalEnergy()
                  << " kWh\n";
             break;
+
         case 4:
             calculateBilling();
             break;
+
         case 5:
             saveAppliances();
-            cout << "Data saved successfully.\n";
             cout << "Goodbye\n";
             break;
+
         default:
             cout << "Invalid choice\n";
         }
